@@ -76,7 +76,7 @@ module LanguageList
     end
 
     def localized_name(locale = nil)
-      locale = I18n.locale if locale == nil && defined?(I18n) == 'constant'
+      locale = I18n.locale.to_s if locale.nil? && defined?(I18n) == 'constant'
       LOCALIZED_LANGUAGES.dig(locale, iso_639_1) || name
     end
   end
