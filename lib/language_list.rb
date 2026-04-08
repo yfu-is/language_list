@@ -1,4 +1,5 @@
 require 'yaml'
+require 'language_list/convert'
 
 module LanguageList
   class LanguageInfo
@@ -73,6 +74,11 @@ module LanguageList
         find_by_iso_639_2t(code) ||
         find_by_name(code)
     end
+
+    def localized_name(locale = nil)
+      locale = I18n.locale if locale == nil && defined?(I18n) == 'constant'
+      LOCALIZED_LANGUAGES.dig(locale, iso_639_1) || name
+    end
   end
 
   ALL_LANGUAGES = begin
@@ -85,6 +91,16 @@ module LanguageList
   ISO_639_1 = ALL_LANGUAGES.select(&:iso_639_1?).freeze
   LIVING_LANGUAGES = ALL_LANGUAGES.select(&:living?).freeze
   COMMON_LANGUAGES = ALL_LANGUAGES.select(&:common?).freeze
+
+  LOCALIZED_LANGUAGES = begin
+    hash = {}
+    files = Dir.glob(File.expand_path('../../data/translations/yml/*.yml', __FILE__))
+    files.each do |file|
+      locale = File.basename(file).split(".")[0]
+      hash[locale] = YAML.load_file(file)
+    end
+    hash
+  end.freeze
 
   BY_NAME      = {}
   BY_ISO_639_1 = {}

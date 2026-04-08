@@ -16,4 +16,11 @@ task :dump do
   File.write(output_path, Marshal.dump(entries))
 end
 
+task :convert do
+  data_path = File.expand_path(File.join('..', 'data'), __FILE__)
+  convert = LanguageList::Convert.new(data_path)
+
+  convert.call
+end
+
 task :default => :test
